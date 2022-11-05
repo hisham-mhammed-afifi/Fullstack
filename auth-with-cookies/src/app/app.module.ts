@@ -2,6 +2,8 @@ import { NgModule } from '@angular/core';
 import { BrowserModule } from '@angular/platform-browser';
 import { HttpClientModule, HTTP_INTERCEPTORS } from '@angular/common/http';
 
+import { JwtModule } from '@auth0/angular-jwt';
+
 import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
 import { ReactiveFormsModule } from '@angular/forms';
@@ -30,6 +32,18 @@ import { InputComponent } from './input/input.component';
     AppRoutingModule,
     HttpClientModule,
     ReactiveFormsModule,
+    JwtModule.forRoot({
+      config: {
+        tokenGetter: () => {
+          return (
+            localStorage.getItem('accessToken') ||
+            sessionStorage.getItem('accessToken')
+          );
+        },
+        allowedDomains: ['example.com'],
+        disallowedRoutes: ['http://example.com/examplebadroute/'],
+      },
+    }),
   ],
   providers: [
     {

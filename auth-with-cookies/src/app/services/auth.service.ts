@@ -4,6 +4,8 @@ import { Observable } from 'rxjs';
 import { tap } from 'rxjs/operators';
 import { environment } from 'src/environments/environment';
 
+import { JwtHelperService } from '@auth0/angular-jwt';
+
 export interface User {
   name?: string;
   email: string;
@@ -16,7 +18,24 @@ export interface User {
 export class AuthService {
   private BaseURL = environment.baseURL + '/auth';
 
-  constructor(private _http: HttpClient) {}
+  constructor(private _http: HttpClient, private jwtHelper: JwtHelperService) {}
+
+  isAuthenticated(): boolean {
+    const token = this.getToken();
+
+    if (token) {
+      try {
+        const currentUser = this.jwtHelper.decodeToken(token).user;
+        if (currentUser && currentUser._id) {
+          return !this.jwtHelper.isTokenExpired(token, 5);
+        }
+        return false;
+      } catch (error) {
+        return false;
+      }
+    }
+    return false;
+  }
 
   register(credentials: User): Observable<boolean> {
     return this._http.post<boolean>(this.BaseURL + '/register', credentials);
@@ -28,6 +47,7 @@ export class AuthService {
       .pipe(
         tap((res) => {
           sessionStorage.setItem('acccessToken', res.accessToken);
+          this.setCurrentUserId(res.accessToken);
         })
       );
   }
@@ -41,7 +61,7 @@ export class AuthService {
   }
 
   emailExist(email: string): Observable<boolean> {
-    return this._http.post<boolean>(this.BaseURL + '/alreadyexist', {email});
+    return this._http.post<boolean>(this.BaseURL + '/alreadyexist', { email });
   }
 
   setToken(token: string) {
@@ -52,12 +72,27 @@ export class AuthService {
   getToken() {
     return (
       localStorage.getItem('acccessToken') ||
-      sessionStorage.getItem('acccessToken')
+      sessionStorage.getItem('acccessToken') ||
+      ''
     );
   }
 
   removeToken() {
     localStorage.removeItem('acccessToken');
+    localStorage.removeItem('userId');
     sessionStorage.removeItem('acccessToken');
   }
+
+  setCurrentUserId(token: string) {
+    const currentUser = this.jwtHelper.decodeToken(token).user;
+    localStorage.setItem('userId', currentUser._id);
+  }
+
+  getCurrentUserId() {
+    return localStorage.getItem('userId');
+  }
 }
+
+// const decodedToken = helper.decodeToken(myRawToken);
+// const expirationDate = helper.getTokenExpirationDate(myRawToken);
+// const isExpired = helper.isTokenExpired(myRawToken);

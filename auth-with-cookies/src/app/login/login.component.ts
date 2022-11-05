@@ -10,6 +10,7 @@ import { AuthService } from 'src/app/services/auth.service';
 })
 export class LoginComponent implements OnInit {
   inSubmittion = false;
+  errorMsg = '';
 
   constructor(private _auth: AuthService, private router: Router) {}
   email = new FormControl('', [Validators.required, Validators.email]);
@@ -56,7 +57,10 @@ export class LoginComponent implements OnInit {
           this.router.navigate(['']);
         }
       },
-      error: () => {},
+      error: () => {
+        this.errorMsg = 'Email or Password Wrong, try again.';
+        this.inSubmittion = false;
+      },
       complete: () => {},
     });
   }
