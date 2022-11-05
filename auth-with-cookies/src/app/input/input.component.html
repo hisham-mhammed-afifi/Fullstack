@@ -1,0 +1,30 @@
+<div class="mb-3" [class.form-check]="type === 'checkbox'">
+  <label [for]="name" class="form-label">{{ label }}</label>
+  <input
+    [formControl]="control"
+    [type]="type"
+    [class]="type === 'checkbox' ? 'form-check-input' : 'form-control'"
+    [id]="name"
+  />
+</div>
+
+<!-- handling errors -->
+<ng-container *ngIf="control.touched && control.dirty">
+  <div class="text-danger">
+    <p *ngIf="control.errors?.['pattern']">
+      *Password must 8 chars, 1 uppercase, 1 lowercase and 1 num.
+    </p>
+    <p *ngIf="control.errors?.['required']">*Field is required.</p>
+    <p *ngIf="control.errors?.['minlength']">
+      *You entered
+      {{ control.errors?.['minlength'].actualLength }} chars. It must be at
+      least
+      {{ control.errors?.['minlength'].requiredLength }}
+    </p>
+    <p *ngIf="control.errors?.['email']">*You must enter a valid Email.</p>
+    <p *ngIf="control.errors?.['min']">*Value too low.</p>
+    <p *ngIf="control.errors?.['max']">*Value too high.</p>
+    <p *ngIf="control.errors?.['noMatch']">*Passwords dont match.</p>
+    <p *ngIf="control.errors?.['alreadyExist']">*Email already exist.</p>
+  </div>
+</ng-container>

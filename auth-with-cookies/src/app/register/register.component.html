@@ -1,0 +1,9 @@
+<app-form
+  buttonTitle="Register"
+  linkButtonTitle="Login"
+  linkPath="/login"
+  [form]="registerForm"
+  [inputs]="registerInputs"
+  [disabledBtn]="registerForm.invalid || inSubmittion"
+  (submitValues)="register()"
+></app-form>

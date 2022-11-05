@@ -1,0 +1,11 @@
+<form [formGroup]="form" (ngSubmit)="submitForm()" style="min-width: 320px">
+  <app-input
+    *ngFor="let input of inputs"
+    [control]="input.control"
+    [label]="input.label"
+    [type]="input.type"
+    [name]="input.name"
+  ></app-input>
+  <button type="submit" class="btn btn-primary px-5" [disabled]="disabledBtn">{{ buttonTitle }}</button>
+  <a [routerLink]="linkPath" class="btn btn-link px-5">{{ linkButtonTitle }}</a>
+</form>
